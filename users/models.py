@@ -28,7 +28,9 @@ class Users(models.Model):
     adhar_file = models.FileField(upload_to='adhar_files/',null=False,blank=False, validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
     #user profile picture
     user_profile_picture = models.ImageField(upload_to='user_profiles/',null=False, blank=True, validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+    user_approval = models.BooleanField(default=False)
     user_status = models.CharField(max_length=10, choices=status_choices, default='pending')
+    message = models.TextField(null=True, blank=True, default="Rejection reason messages")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
