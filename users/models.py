@@ -6,7 +6,7 @@ def validate_fields(value):
     if not value:
         raise ValueError("This field cannot be empty")
     return value
-class Users(models.Model):
+class   Users(models.Model):
     status_choices = [
         ('approved','Approved'),
         ('rejected','Rejected'),
@@ -37,4 +37,7 @@ class Users(models.Model):
     def __str__(self):
         return self.user_name
     
-
+class Admin(models.Model):
+    email = models.EmailField(unique=True, blank=False, null=False)
+    password = models.CharField(null=False, blank=False, max_length=10)
+    phone_no = models.CharField(max_length=10,  blank=False, null=False)
