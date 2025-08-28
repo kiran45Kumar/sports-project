@@ -11,6 +11,7 @@ class   Users(models.Model):
         ('approved','Approved'),
         ('rejected','Rejected'),
         ('pending','Pending'),
+        ('blocked', 'Blocked'),
     ]
     #user details
     user_id = models.AutoField(primary_key=True)
@@ -41,3 +42,7 @@ class Admin(models.Model):
     email = models.EmailField(unique=True, blank=False, null=False)
     password = models.CharField(null=False, blank=False, max_length=10)
     phone_no = models.CharField(max_length=10,  blank=False, null=False)
+    # created_at = models.DateTimeField(auto_now_add=True,default='')
+    # updated_at = models.DateTimeField(auto_now=True)  
+    def __str__(self):
+        return self.email

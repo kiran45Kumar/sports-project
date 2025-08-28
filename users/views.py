@@ -1,10 +1,10 @@
 from django.conf import settings
 from rest_framework import viewsets
-from .models import Users
-from .serializers import *
+from users.models import Users
+from users.serializers import *
 from rest_framework.views import APIView
 from users.models import Admin
-from  rest_framework.response import Response
+from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
 
@@ -28,7 +28,7 @@ class LoginUser(APIView):
             users = Users()
             users.user_phone = phone
             users.user_pass = password
-            users.save
+            users.save()
             request.session['user_phone'] = users.user_phone
             request.session['user_name'] = users.user_name
             request.session['user_email'] = users.user_email
@@ -99,6 +99,7 @@ class SendEmail(APIView):
             return Response({"status": "fail", "message": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 class ResetPassword(APIView):
     def post(self, request):
         email = request.data.get('email')
@@ -131,4 +132,3 @@ class ResetPassword(APIView):
             return Response({"status": "fail", "message": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-    

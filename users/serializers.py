@@ -7,7 +7,7 @@ class UsersSerializer(serializers.ModelSerializer):
         model = Users
         fields = '__all__'
         # extra_kwargs = {
-        #     "user_pass": {"write_only": True}  # security: don't return password in response
+        #     "user_pass    ": {"write_only": True}  # security: don't return password in response
         # }
     def validate_user_pass(self, value): #to validate use validate_<fieldname>
         if len(value) < 8:

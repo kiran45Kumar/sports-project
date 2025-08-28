@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'users',
     'rest_framework',  # Django REST Framework for API development,
     'corsheaders',
+    'equipments',
 ]
 
 MIDDLEWARE = [
