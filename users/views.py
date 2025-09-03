@@ -9,7 +9,7 @@ from rest_framework import status
 from django.core.mail import send_mail
 
 class UsersViewSet(viewsets.ModelViewSet):
-    queryset = Users.objects.all()
+    queryset = Users.objects.all().order_by('-created_at')
     serializer_class = UsersSerializer
     
 class AdminViewSet(viewsets.ModelViewSet):
