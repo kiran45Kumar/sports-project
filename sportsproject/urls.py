@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),  # Include the users app URLs
     path('equipment/', include('equipments.urls')),  # Include the equipments app URLs
+    path('booking/', include('booking.urls')),  # Include the booking app URLs
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

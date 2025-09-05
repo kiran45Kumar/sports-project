@@ -6,7 +6,7 @@ def validate_fields(value):
     if not value:
         raise ValueError("This field cannot be empty")
     return value
-class   Users(models.Model):
+class Users(models.Model):
     status_choices = [
         ('approved','Approved'),
         ('rejected','Rejected'),

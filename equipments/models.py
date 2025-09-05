@@ -24,7 +24,7 @@ class Equipments(models.Model):
     e_name = models.CharField(max_length=20, null=False, blank=False)
     e_description = models.TextField(null=False, blank=False)
     e_price = models.DecimalField(max_digits=5, decimal_places=2,null=False, blank=False)
-    e_deposit = models.DecimalField(max_digits=5, decimal_places=2,null=False, blank=False,default="This amount is refundable after the return of product.")
+    e_deposit = models.DecimalField(max_digits=10, decimal_places=2,null=False, blank=False,default="This amount is refundable after the return of product.")
     e_quantity = models.IntegerField(null=False, blank=False)
     etype = models.CharField(max_length=20, null=False, blank=False, default='', choices=type_choices)
     e_status = models.CharField(max_length=10, blank=False, null=False, default="pending",choices=status_choices)
