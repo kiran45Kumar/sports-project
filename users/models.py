@@ -46,3 +46,11 @@ class Admin(models.Model):
     # updated_at = models.DateTimeField(auto_now=True)  
     def __str__(self):
         return self.email
+class User(models.Model):
+    email = models.EmailField(unique=True, blank=False, null=False)
+    password = models.CharField(max_length=128,null=False, blank=False)
+    phone_no = models.CharField(max_length=15, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)  
+    def __str__(self):
+        return self.email
