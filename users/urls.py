@@ -17,4 +17,5 @@ urlpatterns = [
     path('reset_password/', ResetPassword.as_view(),name='reset_password'),
     path('signup_user/', RegisterUser.as_view(),name='signup_user'),
     path('login/', Login.as_view(),name='login'),
+    path('logout_user/', LogoutUser.as_view(),name='logout_user'),
 ]

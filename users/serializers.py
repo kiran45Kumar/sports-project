@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import User, Users, Admin
 import re
 
-class UsersSerializer(serializers.HyperlinkedModelSerializer):
+class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = '__all__'
@@ -20,7 +20,7 @@ class UsersSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError("Password must contain at least one special character")
         return value
 
-class AdminSerializer(serializers.HyperlinkedModelSerializer):
+class AdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admin
         fields = '__all__'
@@ -34,7 +34,7 @@ class AdminSerializer(serializers.HyperlinkedModelSerializer):
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
             raise serializers.ValidationError("Password must contain at least one special character")
         return value
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'

@@ -47,6 +47,7 @@ class Admin(models.Model):
     def __str__(self):
         return self.email
 class User(models.Model):
+    username = models.CharField(max_length=50, blank=False, null=False,default='')
     email = models.EmailField(unique=True, blank=False, null=False)
     password = models.CharField(max_length=128,null=False, blank=False)
     phone_no = models.CharField(max_length=15, blank=False, null=False)

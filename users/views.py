@@ -112,30 +112,29 @@ class SendEmail(APIView):
         if not email:
             return Response({"status": "fail", "message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(user_email=email)
+            user = User.objects.get(email=email)
             if user:
                 send_mail(
                 'Subject - Password Reset',
-                'Please find the link below to reset your password:\n\nhttp://localhost:3000/reset-password/',
+                'Please find the link below to reset your password:\n\nhttp://localhost:5173/reset-password/',
                 settings.EMAIL_HOST_USER,
-                [user.user_email],
+                [user.email],
                 fail_silently=False,
                 )
-            return Response({"status": "pass", "message": "Email sent successfully"}, status=status.HTTP_200_OK)
-        except Users.DoesNotExist as e:
-            return Response({"status": "fail", "message": str(e)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"status": "pass", "message": "A link has been sent to your email, please check and reset the password.", 'email':user.email}, status=status.HTTP_200_OK)
+        except User.DoesNotExist as e:
+            return Response({"status": "fail", "message": f'User with email "{email}" does not exist'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class ResetPassword(APIView):
     def post(self, request):
+        print(request.data)
         email = request.data.get('email')
         password = request.data.get('password')
-        confirm_password = request.data.get('confirm_password')
+        confirm_password = request.data.get('confirmPassword')
         password_pattern = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
-        if not email:
-            return Response({"status": "fail", "message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
-        elif not password:
+        if not password:
             return Response({"status": "fail", "message": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
         elif not confirm_password:
             return Response({"status": "fail", "message": "Confirm password is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -144,32 +143,41 @@ class ResetPassword(APIView):
         elif not re.match(password_pattern, password):
             return Response({"status": "fail", "message": "<h1>Password must be at least 8 characters long and include <br> uppercase, lowercase, number, and special character.</h1>"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(user_email=email)
-            user.user_pass = password
+            user = User.objects.get(email=email)
+            user.password = make_password(password)
             user.save()
             send_mail(
                 'Subject - Password Reset',
                 'Your password has been reset successfully.',
                 settings.EMAIL_HOST_USER,
-                [user.user_email],
+                [user.email],
                 fail_silently=False,    
             )
             return Response({"status": "pass", "message": "Password reset successfully"}, status=status.HTTP_200_OK)
-        except Users.DoesNotExist as e:
+        except User.DoesNotExist as e:
             return Response({"status": "fail", "message": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 class RegisterUser(APIView):
     def post(self, request):
+        username = request.data.get('username')
         email = request.data.get('email')
         phone = request.data.get('phone')
         password = request.data.get('password')
-        if not email:
+        password_pattern = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+        if not username:
+            return Response({"status":'fail','message':'Enter username'},status = status.HTTP_400_BAD_REQUEST)
+        elif not email:
             return Response({"status":'fail','message':'Enter email'},status = status.HTTP_400_BAD_REQUEST)
         elif not phone:
             return Response({"status":'fail','message':'Enter phone number'},status = status.HTTP_400_BAD_REQUEST)
+        elif len(phone) != 10 or not phone.isdigit():
+            return Response({"status":'fail','message':'Enter valid phone number'},status = status.HTTP_400_BAD_REQUEST)
         elif not password:
             return Response({"status":'fail','message':'Enter password'}, status = status.HTTP_400_BAD_REQUEST)
+        elif not re.match(password_pattern, password):
+            return Response({"status": "fail", "message": "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             if User.objects.filter(email = email).exists():
                 return Response({"status":'fail','message':'Email already exists'},status = status.HTTP_400_BAD_REQUEST)
@@ -177,6 +185,7 @@ class RegisterUser(APIView):
                 return Response({"status":'fail','message':'Phone number already exists'},status = status.HTTP_400_BAD_REQUEST)
             else:
                 user = User()
+                user.username = username
                 user.email = email
                 user.phone_no = phone
                 user.password = make_password(password)
@@ -184,6 +193,7 @@ class RegisterUser(APIView):
                 return Response({"status":"pass","message":'Sign up successful'}, status = status.HTTP_200_OK)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        
 class Login(APIView):
     def post(self, request):
         email = request.data.get('email')
@@ -195,14 +205,14 @@ class Login(APIView):
         try:
             user = User.objects.get(email=email)
             if not user:
-                return Response({"status":"fail","message":'Login Failed, User does not exist'}, status = status.HTTP_200_OK)
+                return Response({"status":"fail","message":'Login Failed, User does not exist'}, status = status.HTTP_400_BAD_REQUEST)
             if not check_password(password, user.password):
-                return Response({"status":"fail","message":'Login Failed, Incorrect Password'}, status = status.HTTP_200_OK)
+                return Response({"status":"fail","message":'Login Failed, Incorrect Password'}, status = status.HTTP_400_BAD_REQUEST)
             request.session['user_phone'] = user.phone_no
             request.session['user_email'] = user.email
-            return Response({"status":"pass","message":'Login Successful'}, status = status.HTTP_200_OK)
+            return Response({"status":"pass","message":'Login Successful', 'data': {'username':user.username,'email': user.email, 'phone': user.phone_no}}, status = status.HTTP_200_OK)
         except User.DoesNotExist as e:
-            return Response({'status':'fail','message':str(e)}, status = status.HTTP_404_NOT_FOUND)
+            return Response({'status':'fail','message':f'User with email "{email}" does not exist'}, status = status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'status':'fail','message':str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserViewSet(viewsets.ModelViewSet):

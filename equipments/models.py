@@ -35,3 +35,8 @@ class Equipments(models.Model):
 
     def __str__(self):
         return self.e_name
+
+class EquipmentImage(models.Model):
+    equipment = models.ForeignKey(Equipments, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='equipment_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)

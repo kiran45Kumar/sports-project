@@ -7,5 +7,6 @@ router.register(r'categories',CategoryViewSet)
 router.register(r'equipments',EquipmentViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('all_equipments/', ViewAllEquipments.as_view(), name='all_equipments'),
 ]
